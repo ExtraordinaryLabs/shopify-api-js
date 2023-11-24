@@ -29,6 +29,7 @@ import {
   buildDataObjectByPath,
   buildCombinedDataObject,
   getErrorCause,
+  getKeyValueIfValid,
 } from "./utilities";
 
 export function createGraphQLClient({
@@ -314,14 +315,6 @@ function readStreamChunk(
   };
 }
 
-function getResponseData(data: { [key: string]: any }) {
-  return Object.keys(data).length > 0 ? { data } : {};
-}
-
-function getResponseExtensions(extensions?: { [key: string]: any }) {
-  return extensions ? { extensions } : {};
-}
-
 function generateRequestStream(
   fetch: ReturnType<typeof generateFetch>,
 ): GraphQLClient["requestStream"] {
@@ -397,7 +390,12 @@ function generateRequestStream(
               streamBodyIterator,
               boundary,
             )) {
-              const dataArray = chunkBodies
+              const dataArray: {
+                data: any;
+                errors?: any;
+                extensions?: any;
+                hasNext: boolean;
+              }[] = chunkBodies
                 .map((value) => {
                   try {
                     return JSON.parse(value);
@@ -419,8 +417,8 @@ function generateRequestStream(
 
                   return {
                     data: payloadData,
-                    ...(errors ? { errors } : {}),
-                    ...(extensions ? { extensions } : {}),
+                    ...getKeyValueIfValid("errors", errors),
+                    ...getKeyValueIfValid("extensions", extensions),
                     hasNext,
                   };
                 });
@@ -450,14 +448,12 @@ function generateRequestStream(
               }
 
               if (Object.keys(combinedData).length === 0) {
-                throw new Error(
-                  "API multipart response did not contain a data object",
-                );
+                throw new Error(NO_DATA_OR_ERRORS_ERROR);
               }
 
               yield {
-                ...getResponseData(combinedData),
-                ...getResponseExtensions(responseExtensions),
+                ...getKeyValueIfValid("data", combinedData),
+                ...getKeyValueIfValid("extensions", responseExtensions),
                 hasNext: streamHasNext,
               };
             }
@@ -469,14 +465,12 @@ function generateRequestStream(
             const cause = getErrorCause(error);
 
             yield {
-              ...getResponseData(combinedData),
-              ...getResponseExtensions(responseExtensions),
-              error: {
+              ...getKeyValueIfValid("data", combinedData),
+              ...getKeyValueIfValid("extensions", responseExtensions),
+              errors: {
                 networkStatusCode: status,
                 message: formatErrorMessage(getErrorMessage(error)),
-                ...(cause.graphQLErrors
-                  ? { graphQLErrors: cause.graphQLErrors }
-                  : {}),
+                ...getKeyValueIfValid("graphQLErrors", cause.graphQLErrors),
               },
               hasNext: false,
             };
@@ -491,8 +485,8 @@ function generateRequestStream(
           const cause = getErrorCause(error);
 
           yield {
-            error: {
-              ...(cause.status ? { networkStatusCode: cause.status } : {}),
+            errors: {
+              ...getKeyValueIfValid("networkStatusCode", cause.status),
               message: formatErrorMessage(getErrorMessage(error)),
             },
             hasNext: false,
