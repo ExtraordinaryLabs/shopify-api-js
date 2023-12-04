@@ -37,6 +37,7 @@ describe("Admin API Client", () => {
       },
       fetch: jest.fn(),
       request: jest.fn(),
+      requestStream: jest.fn(),
     };
 
     beforeEach(() => {
@@ -202,7 +203,11 @@ describe("Admin API Client", () => {
           });
 
           expect(consoleWarnSpy).toHaveBeenCalledWith(
+<<<<<<< HEAD
             `Admin API Client: the provided apiVersion ("2022-07") is likely deprecated or not supported. Currently supported API versions: ${mockApiVersions.join(
+=======
+            `Admin API Client: the provided apiVersion ("2022-07") is likely deprecated or not supported. Current supported API versions: ${mockApiVersions.join(
+>>>>>>> 6aa85d71 (Refactor unit tests and update api version validation)
               ", ",
             )}`,
           );
@@ -380,7 +385,11 @@ describe("Admin API Client", () => {
         client.getApiUrl(version);
 
         expect(consoleWarnSpy).toHaveBeenCalledWith(
+<<<<<<< HEAD
           `Admin API Client: the provided apiVersion ("2021-01") is likely deprecated or not supported. Currently supported API versions: ${mockApiVersions.join(
+=======
+          `Admin API Client: the provided apiVersion ("2021-01") is likely deprecated or not supported. Current supported API versions: ${mockApiVersions.join(
+>>>>>>> 6aa85d71 (Refactor unit tests and update api version validation)
             ", ",
           )}`,
         );
