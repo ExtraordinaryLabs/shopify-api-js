@@ -28,7 +28,6 @@ import {
   buildDataObjectByPath,
   buildCombinedDataObject,
   getErrorCause,
-  getKeyValueIfValid,
 } from "./utilities";
 
 export function createGraphQLClient({
@@ -465,8 +464,8 @@ function generateRequestStream(
               ...getKeyValueIfValid("data", combinedData),
               ...getKeyValueIfValid("extensions", responseExtensions),
               errors: {
-                networkStatusCode: status,
                 message: formatErrorMessage(getErrorMessage(error)),
+                networkStatusCode: status,
                 ...getKeyValueIfValid("graphQLErrors", cause?.graphQLErrors),
                 response,
               },
@@ -482,8 +481,8 @@ function generateRequestStream(
 
           yield {
             errors: {
-              ...getKeyValueIfValid("networkStatusCode", response?.status),
               message: formatErrorMessage(getErrorMessage(error)),
+              ...getKeyValueIfValid("networkStatusCode", response?.status),
               ...getKeyValueIfValid("response", response),
             },
             hasNext: false,
