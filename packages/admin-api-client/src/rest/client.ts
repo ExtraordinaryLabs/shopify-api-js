@@ -80,9 +80,14 @@ export function createAdminRestApiClient({
       headers: requestHeaders,
       searchParams,
       retries = 0,
+      apiVersion,
     }: RequestOptions,
   ): Promise<ReturnType<CustomFetchApi>> => {
-    const url = apiUrlFormatter(path, new URLSearchParams(searchParams));
+    const url = apiUrlFormatter(
+      path,
+      new URLSearchParams(searchParams),
+      apiVersion,
+    );
 
     const body = typeof data === "string" ? data : JSON.stringify(data);
 

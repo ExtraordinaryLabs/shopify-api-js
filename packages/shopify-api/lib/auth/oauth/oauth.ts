@@ -6,13 +6,12 @@ import * as ShopifyErrors from '../../error';
 import {validateHmac} from '../../utils/hmac-validator';
 import {sanitizeShop} from '../../utils/shop-validator';
 import {Session} from '../../session/session';
-import {httpClientClass} from '../../clients/http_client/http_client';
-import {DataType} from '../../clients/http_client/types';
 import {
   abstractConvertRequest,
   abstractConvertIncomingResponse,
   abstractConvertResponse,
   abstractConvertHeaders,
+  abstractFetch,
   AdapterResponse,
   AdapterHeaders,
   Cookies,
@@ -20,6 +19,7 @@ import {
   NormalizedRequest,
 } from '../../../runtime/http';
 import {logger, ShopifyLogger} from '../../logger';
+import {DataType} from '../../clients/types';
 
 import {
   SESSION_COOKIE_NAME,
@@ -30,7 +30,7 @@ import {
 } from './types';
 import {nonce} from './nonce';
 import {safeCompare} from './safe-compare';
-import {accessTokenResponse, createSession} from './create-session';
+import {createSession} from './create-session';
 
 export type OAuthBegin = (beginParams: BeginParams) => Promise<AdapterResponse>;
 
@@ -178,19 +178,21 @@ export function callback(config: ConfigInterface): OAuthCallback {
       code: query.get('code'),
     };
 
-    const postParams = {
-      path: '/admin/oauth/access_token',
-      type: DataType.JSON,
-      data: body,
-    };
     const cleanShop = sanitizeShop(config)(query.get('shop')!, true)!;
 
-    const HttpClient = httpClientClass(config);
-    const client = new HttpClient({domain: cleanShop});
-    const postResponse = await client.post(postParams);
+    const postResponse = await abstractFetch(
+      `https://${cleanShop}/admin/oauth/access_token`,
+      {
+        body: JSON.stringify(body),
+        headers: {
+          'Content-Type': DataType.JSON,
+          Accept: DataType.JSON,
+        },
+      },
+    );
 
     const session: Session = createSession({
-      accessTokenResponse: accessTokenResponse(postResponse),
+      accessTokenResponse: await postResponse.json(),
       shop: cleanShop,
       state: stateFromCookie,
       config,

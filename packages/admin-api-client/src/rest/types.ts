@@ -18,6 +18,7 @@ export interface GetRequestOptions {
   data?: { [key: string]: any } | string;
   searchParams?: URLSearchParams;
   retries?: number;
+  apiVersion?: string;
 }
 
 export interface PostRequestOptions extends GetRequestOptions {

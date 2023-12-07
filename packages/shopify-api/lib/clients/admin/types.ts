@@ -1,6 +1,13 @@
 import {ApiVersion} from '../../types';
 import {Session} from '../../session/session';
-import {RequestReturn, QueryParams} from '../http_client/types';
+import {Headers} from '../../../runtime';
+
+export type QueryParams =
+  | string
+  | number
+  | string[]
+  | number[]
+  | {[key: string]: QueryParams};
 
 export interface PageInfoParams {
   path: string;
@@ -16,9 +23,11 @@ export interface PageInfo {
   nextPage?: PageInfoParams;
 }
 
-export type RestRequestReturn<T = unknown> = RequestReturn<T> & {
+export interface RestRequestReturn<T = any> {
+  body: T;
+  headers: Headers;
   pageInfo?: PageInfo;
-};
+}
 
 export interface RestClientParams {
   session: Session;

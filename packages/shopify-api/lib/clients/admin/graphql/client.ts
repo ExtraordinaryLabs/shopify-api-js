@@ -8,15 +8,16 @@ import {
 
 import {ApiVersion} from '../../../types';
 import {ConfigInterface} from '../../../base-types';
-import {HeaderParams, RequestReturn} from '../../http_client/types';
-import {Session} from '../../../session/session';
-import {logger} from '../../../logger';
-import * as ShopifyErrors from '../../../error';
 import type {
+  HeaderParams,
+  RequestReturn,
   GraphqlParams,
   GraphqlClientParams,
   GraphqlQueryOptions,
 } from '../../types';
+import {Session} from '../../../session/session';
+import {logger} from '../../../logger';
+import * as ShopifyErrors from '../../../error';
 import {abstractFetch} from '../../../../runtime';
 import {
   clientLoggerFactory,

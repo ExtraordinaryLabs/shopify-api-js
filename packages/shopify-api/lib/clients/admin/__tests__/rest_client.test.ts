@@ -3,7 +3,7 @@ import {
   queueMockResponses,
 } from '../../../__tests__/test-helper';
 import {testConfig} from '../../../__tests__/test-config';
-import {DataType, GetRequestParams} from '../../http_client/types';
+import {DataType, GetRequestParams} from '../../types';
 import {RestRequestReturn, PageInfo} from '../types';
 import * as ShopifyErrors from '../../../error';
 import {
