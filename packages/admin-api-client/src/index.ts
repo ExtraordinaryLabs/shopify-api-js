@@ -1,4 +1,4 @@
-export { createAdminApiClient } from "./admin-api-client";
+export { createAdminApiClient } from "./graphql";
 export {
   AdminApiClient,
   AdminQueries,
@@ -16,3 +16,5 @@ export type {
   ResponseWithType,
   ReturnData,
 } from "@shopify/graphql-client";
+
+export { AdminApiRestClient } from "./rest/types";
